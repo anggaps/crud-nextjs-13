@@ -1,19 +1,33 @@
-import Image from 'next/image';
-import { Inter } from 'next/font/google';
-import List from './components/ListItem';
+import Link from 'next/link';
+import React from 'react';
+import Item from './item';
 
-const inter = Inter({ subsets: ['latin'] });
+const getPosts = async () => {
+  const res = await fetch('http://localhost:3000/api/posts', {
+    next: { revalidate: 0 },
+  });
+  const json = await res.json();
+  return json;
+};
 
-const listData = [
-  { id: 1, title: 'Item 1', deskripsi: 'Deskripsi item 1' },
-  { id: 2, title: 'Item 2', deskripsi: 'Deskripsi item 2' },
-  { id: 3, title: 'Item 3', deskripsi: 'Deskripsi item 3' },
-];
+const Page = async () => {
+  const posts = await getPosts();
 
-export default function Home() {
   return (
-    <div>
-      <List list={listData} />
+    <div className='w-[1000px] mx-auto pt-20'>
+      <Link
+        href={'/create'}
+        className='px-3 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-md text-white'
+      >
+        Create
+      </Link>
+      <div className='flex flex-col mt-8 gap-4'>
+        {posts?.posts?.map((post: any, index: number) => (
+          <Item key={index} post={post} />
+        ))}
+      </div>
     </div>
   );
-}
+};
+
+export default Page;
